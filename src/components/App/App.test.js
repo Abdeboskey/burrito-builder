@@ -48,6 +48,10 @@ describe('App', () => {
     const bubsOrder = await findByRole('heading', { name: /bubs/i })
     const jimmyOrder = await findByRole('heading', { name: /jimmy/i })
     const xadieOrder = await findByRole('heading', { name: /xadie/i })
+
+    expect(bubsOrder).toBeInTheDocument()
+    expect(jimmyOrder).toBeInTheDocument()
+    expect(xadieOrder).toBeInTheDocument()
   })
 
   it('should display a new order when one has been successfully placed', async () => {
