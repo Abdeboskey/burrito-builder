@@ -14,9 +14,7 @@ class App extends Component {
 
   componentDidMount() {
     getOrders()
-      .then(orders => {
-        this.addExistingOrders(orders.orders)
-      })
+      .then(orders => this.addExistingOrders(orders.orders))
       .catch(err => console.error('Error fetching:', err));
   }
 
