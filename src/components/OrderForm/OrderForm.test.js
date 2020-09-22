@@ -81,7 +81,7 @@ describe('OrderForm', () => {
       ingredients: ['carnitas', 'guacamole']
     })
     const mockAddNewOrder = jest.fn()
-    const { getByRole, getByPlaceholderText, getByText } = render(
+    const { getByRole, getByPlaceholderText } = render(
       <MemoryRouter>
         <OrderForm addNewOrder={mockAddNewOrder}/>
       </MemoryRouter>
