@@ -73,33 +73,4 @@ describe('OrderForm', () => {
     const errorMessage = getByText(/must select at least one ingredient/)
     expect(errorMessage).toBeInTheDocument()
   })
-
-  it.skip('should fire a function when an order has been successfully placed', () => {
-    placeOrder.mockResolvedValueOnce({
-      id: 24,
-      name: 'Bat Man',
-      ingredients: ['carnitas', 'guacamole']
-    })
-    const mockAddNewOrder = jest.fn()
-    const { getByRole, getByPlaceholderText } = render(
-      <MemoryRouter>
-        <OrderForm addNewOrder={mockAddNewOrder}/>
-      </MemoryRouter>
-    )
-
-    const nameInput = getByPlaceholderText(/name/i)
-    fireEvent.change(nameInput, { target: { value: 'Bat Man' } })
-
-    const carnitasButton = getByRole('button', { name: /carnitas/i })
-    fireEvent.click(carnitasButton)
-
-    const guacamoleButton = getByRole('button', { name: /guacamole/i })
-    fireEvent.click(guacamoleButton)
-
-    const submitButton = getByRole('button', { name: /submit order/i });
-    fireEvent.click(submitButton)
-
-    expect(mockAddNewOrder).toHaveBeenCalledTimes(1)
-  })
-
 })
