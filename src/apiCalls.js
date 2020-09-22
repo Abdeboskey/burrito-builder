@@ -32,12 +32,5 @@ export const deleteOrder = id => {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
   })
-  .then(response => {
-		if (response.ok) {
-			return response.json()
-		} else {
-			throw response
-		}
-	})
 }
 
