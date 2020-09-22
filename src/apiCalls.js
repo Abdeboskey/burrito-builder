@@ -26,3 +26,18 @@ export const placeOrder = state => {
 		}
 	})
 }
+
+export const deleteOrder = id => {
+  return fetch(`http://localhost:3001/api/v1/orders/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  })
+  .then(response => {
+		if (response.ok) {
+			return response.json()
+		} else {
+			throw response
+		}
+	})
+}
+
