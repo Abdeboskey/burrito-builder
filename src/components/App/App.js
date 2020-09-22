@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import {getOrders} from '../../apiCalls';
+import { getOrders, deleteOrder } from '../../apiCalls';
 import Orders from '../../components/Orders/Orders';
 import OrderForm from '../../components/OrderForm/OrderForm';
 
@@ -32,6 +32,19 @@ class App extends Component {
     })
   }
 
+  removeOrder = id => {
+    deleteOrder(id)
+      .then(() => {
+        const remainingOrders = this.state.orders.filter(order => {
+          return order.id !== id
+        }) 
+        this.setState({
+          orders: remainingOrders
+        })
+      })
+      .catch(error => console.log(error))
+  }
+
   render() {
     return (
       <main className="App">
@@ -40,7 +53,10 @@ class App extends Component {
           <OrderForm addNewOrder={this.addNewOrder} />
         </header>
 
-        <Orders orders={this.state.orders}/>
+        <Orders 
+          orders={this.state.orders}
+          removeOrder={this.removeOrder}  
+        />
       </main>
     );
   }
