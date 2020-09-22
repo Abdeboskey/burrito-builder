@@ -1,5 +1,105 @@
 import React from 'react'
 import OrderForm from './OrderForm'
-import { render } from '@testing-library/react'
+import { fireEvent, getByText, render } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { MemoryRouter } from 'react-router-dom'
+import { placeOrder } from '../../apiCalls'
+jest.mock("../../apiCalls");
+
+describe('OrderForm', () => {
+  it('should display the correct content when rendered', () => {
+    const mockAddNewOrder = jest.fn()
+    const { getByRole, getByPlaceholderText } = render(
+      <MemoryRouter>
+        <OrderForm addNewOrder={mockAddNewOrder}/>
+      </MemoryRouter>
+    )
+
+    const nameInput = getByPlaceholderText(/name/i)
+    const beansButton = getByRole('button', { name: /beans/i })
+    const sourCreamButton = getByRole('button', { name: /sour cream/i })
+    const submitButton = getByRole('button', { name: /submit order/i })
+    
+    expect(nameInput).toBeInTheDocument()
+    expect(beansButton).toBeInTheDocument()
+    expect(sourCreamButton).toBeInTheDocument()
+    expect(submitButton).toBeInTheDocument()
+  })
+
+  it('should update the value of the name form when typed into', () => {
+    const mockAddNewOrder = jest.fn()
+    const { getByRole, getByPlaceholderText } = render(
+      <MemoryRouter>
+        <OrderForm addNewOrder={mockAddNewOrder}/>
+      </MemoryRouter>
+    )
+
+    const nameInput = getByPlaceholderText(/name/i)
+    fireEvent.change(nameInput, { target: { value: 'Aaron' } })
+
+    expect(nameInput.value).toEqual('Aaron')
+  })
+
+  it('should not allow a user to submit the form if a name has not been entered', () => {
+    const mockAddNewOrder = jest.fn()
+    const { getByRole, getByText } = render(
+      <MemoryRouter>
+        <OrderForm addNewOrder={mockAddNewOrder}/>
+      </MemoryRouter>
+    )
+
+    const beansButton = getByRole('button', { name: /beans/i })
+    fireEvent.click(beansButton)
+    const submitButton = getByRole("button", { name: /submit order/i });
+    fireEvent.click(submitButton)
+
+    const errorMessage = getByText(/must select at least one ingredient/)
+    expect(errorMessage).toBeInTheDocument()
+  })
+
+  it('should not allow a user to submit the form if at least one ingredient has not been selected', () => {
+    const mockAddNewOrder = jest.fn()
+    const { getByRole, getByPlaceholderText, getByText } = render(
+      <MemoryRouter>
+        <OrderForm addNewOrder={mockAddNewOrder}/>
+      </MemoryRouter>
+    )
+
+    const nameInput = getByPlaceholderText(/name/i)
+    fireEvent.change(nameInput, { target: { value: 'Aaron' } })
+    const submitButton = getByRole('button', { name: /submit order/i });
+    fireEvent.click(submitButton)
+
+    const errorMessage = getByText(/must select at least one ingredient/)
+    expect(errorMessage).toBeInTheDocument()
+  })
+
+  it.skip('should fire a function when an order has been successfully placed', () => {
+    placeOrder.mockResolvedValueOnce({
+      id: 24,
+      name: 'Bat Man',
+      ingredients: ['carnitas', 'guacamole']
+    })
+    const mockAddNewOrder = jest.fn()
+    const { getByRole, getByPlaceholderText, getByText } = render(
+      <MemoryRouter>
+        <OrderForm addNewOrder={mockAddNewOrder}/>
+      </MemoryRouter>
+    )
+
+    const nameInput = getByPlaceholderText(/name/i)
+    fireEvent.change(nameInput, { target: { value: 'Bat Man' } })
+
+    const carnitasButton = getByRole('button', { name: /carnitas/i })
+    fireEvent.click(carnitasButton)
+
+    const guacamoleButton = getByRole('button', { name: /guacamole/i })
+    fireEvent.click(guacamoleButton)
+
+    const submitButton = getByRole('button', { name: /submit order/i });
+    fireEvent.click(submitButton)
+
+    expect(mockAddNewOrder).toHaveBeenCalledTimes(1)
+  })
+
+})
