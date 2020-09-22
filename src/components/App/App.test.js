@@ -1,9 +1,9 @@
 import React from 'react'
 import App from './App'
-import { fireEvent, getByText, render } from '@testing-library/react'
+import { fireEvent, waitFor, render } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { MemoryRouter } from 'react-router-dom'
-import { placeOrder, getOrders } from '../../apiCalls'
+import { placeOrder, getOrders, deleteOrder } from '../../apiCalls'
 jest.mock('../../apiCalls')
 
 describe('App', () => {
@@ -74,5 +74,38 @@ describe('App', () => {
     const successfulOrder = await findByRole('heading', {name: /bat man/i})
 
     expect(successfulOrder).toBeInTheDocument()
+  })
+
+  it('should remove an order when the "Order Ready" button has been clicked', async () => {
+    getOrders.mockResolvedValueOnce(existingOrders)
+    placeOrder.mockResolvedValueOnce(newOrder)
+    deleteOrder.mockResolvedValueOnce({})
+    const { findByRole, getByPlaceholderText, getByRole, getAllByRole } = render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    )
+
+    const nameInput = getByPlaceholderText(/name/i);
+    fireEvent.change(nameInput, { target: { value: "Bat Man" } });
+
+    const carnitasButton = getByRole("button", { name: /carnitas/i });
+    fireEvent.click(carnitasButton);
+
+    const guacamoleButton = getByRole("button", { name: /guacamole/i });
+    fireEvent.click(guacamoleButton);
+
+    const submitButton = getByRole("button", { name: /submit order/i });
+    fireEvent.click(submitButton)
+
+    const successfulOrder = await findByRole('heading', {name: /bat man/i})
+    expect(successfulOrder).toBeInTheDocument()
+
+    const removeOrderButtons = getAllByRole('button', { name: /order ready/i})
+    fireEvent.click(removeOrderButtons[3])
+
+    await waitFor(() => {
+      expect(successfulOrder).not.toBeInTheDocument();
+    })
   })
 })
